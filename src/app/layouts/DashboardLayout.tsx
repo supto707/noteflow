@@ -1,12 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Outlet, NavLink, useNavigate } from "react-router";
 import { motion, AnimatePresence } from "motion/react";
 import {
   PenLine, Home, FileText, Database, BookOpen, Settings,
   Search, Sun, Moon, ChevronRight, Plus, Menu, X,
-  Inbox, Star, Trash2, Hash, Clock
+  Inbox, Star, Trash2, Hash, Clock, LogOut
 } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
+import { useAuth } from "../../context/AuthContext";
+import { getUserProfile, getUserWorkspace, getPages, createPage } from "../../lib/api";
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
@@ -18,28 +20,35 @@ const navItems = [
 ];
 
 const secondaryItems = [
-  { label: "Inbox", icon: Inbox, badge: 3 },
-  { label: "Favorites", icon: Star },
-  { label: "Recent", icon: Clock },
-  { label: "Tags", icon: Hash },
-  { label: "Trash", icon: Trash2 },
-];
-
-const recentPages = [
-  { title: "Q4 Strategy", tag: "Work", color: "#6357E8" },
-  { title: "Book Notes — Deep Work", tag: "Reading", color: "#22C27D" },
-  { title: "Product Roadmap v3", tag: "Work", color: "#6357E8" },
-  { title: "Travel: Kyoto 2025", tag: "Personal", color: "#F59E0B" },
-  { title: "Team OKRs — Q4", tag: "Work", color: "#6357E8" },
+  { label: "Inbox", icon: Inbox, badge: 0, to: "/dashboard/inbox" },
+  { label: "Favorites", icon: Star, to: "/dashboard/favorites" },
+  { label: "Recent", icon: Clock, to: "/dashboard/recent" },
+  { label: "Tags", icon: Hash, to: "/dashboard/tags" },
+  { label: "Trash", icon: Trash2, to: "/dashboard/trash" },
 ];
 
 export default function DashboardLayout() {
   const { dark, toggle } = useTheme();
+  const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [profile, setProfile] = useState({ name: "User", email: "", avatar_url: null as string | null });
+  const [recentPages, setRecentPages] = useState<{ title: string; tag: string; color: string }[]>([]);
+
+  useEffect(() => {
+    if (!user) return;
+    getUserProfile(user.id).then(p => {
+      if (p) setProfile({ name: p.name || "User", email: p.email, avatar_url: p.avatar_url });
+    });
+    getUserWorkspace(user.id).then(wsId => {
+      if (wsId) getPages(wsId).then(pages => {
+        setRecentPages(pages.slice(0, 5).map(p => ({ title: p.title, tag: p.is_published ? "Published" : "Draft", color: "#6357E8" })));
+      });
+    });
+  }, [user]);
 
   const bg = dark ? "#0A0A08" : "#F7F6F2";
   const sidebarBg = dark ? "#0E0E0C" : "#FFFFFF";
@@ -96,14 +105,26 @@ export default function DashboardLayout() {
 
       {/* New page */}
       {!collapsed && (
-        <button onClick={() => navigate("/dashboard/notes")}
+        <button onClick={async () => {
+          if (!user) { alert("Please log in first"); return; }
+          const wsId = await getUserWorkspace(user.id);
+          if (!wsId) { alert("No workspace found for your account"); return; }
+          const pageId = await createPage(wsId, user.id, "Untitled");
+          if (pageId) navigate("/dashboard/notes"); else alert("Failed to create page — check console for details");
+        }}
           className="flex items-center gap-2 rounded-lg mx-3 mb-4 transition-all duration-200 hover:bg-[#6357E8]"
           style={{ padding: "9px 12px", background: "#6357E8", border: "none", cursor: "pointer", color: "white", fontSize: 13, fontWeight: 500 }}>
           <Plus size={14} /> New page
         </button>
       )}
       {collapsed && (
-        <button onClick={() => navigate("/dashboard/notes")}
+        <button onClick={async () => {
+          if (!user) { alert("Please log in first"); return; }
+          const wsId = await getUserWorkspace(user.id);
+          if (!wsId) { alert("No workspace found for your account"); return; }
+          const pageId = await createPage(wsId, user.id, "Untitled");
+          if (pageId) navigate("/dashboard/notes"); else alert("Failed to create page — check console for details");
+        }}
           className="flex justify-center mx-auto mb-4 rounded-lg"
           style={{ padding: 9, background: "#6357E8", border: "none", cursor: "pointer", color: "white" }}>
           <Plus size={16} />
@@ -135,19 +156,20 @@ export default function DashboardLayout() {
             Library
           </div>
           <nav className="flex flex-col gap-0.5 px-2 mb-6">
-            {secondaryItems.map(({ label, icon: Icon, badge }) => (
-              <button key={label}
+            {secondaryItems.map(({ label, icon: Icon, to }) => (
+              <NavLink key={label} to={to}
                 className="flex items-center gap-2.5 rounded-lg transition-colors"
-                style={{ padding: "8px 12px", background: "none", border: "none", color: sub, fontSize: 13, cursor: "pointer", textAlign: "left" }}
-                onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = hoverBg)}
-                onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "none")}
+                style={({ isActive }) => ({
+                  padding: "8px 12px", background: isActive ? activeBg : "none", border: "none",
+                  color: isActive ? "#6357E8" : sub, fontSize: 13, cursor: "pointer", textAlign: "left" as const,
+                  textDecoration: "none",
+                })}
+                onMouseEnter={e => { if (!(e.currentTarget as HTMLElement).getAttribute("aria-current")) (e.currentTarget as HTMLElement).style.background = hoverBg; }}
+                onMouseLeave={e => { const el = e.currentTarget as HTMLElement; if (!el.getAttribute("aria-current")) el.style.background = "none"; }}
               >
                 <Icon size={14} style={{ flexShrink: 0 }} />
                 {label}
-                {badge && (
-                  <span className="ml-auto rounded-full" style={{ fontSize: 10, fontWeight: 600, padding: "1px 6px", background: "#6357E8", color: "white" }}>{badge}</span>
-                )}
-              </button>
+              </NavLink>
             ))}
           </nav>
 
@@ -175,13 +197,13 @@ export default function DashboardLayout() {
         <div className="flex items-center gap-3">
           <div className="rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
             style={{ width: 32, height: 32, background: "#6357E8", color: "white" }}>
-            A
+            {profile.name[0] || "U"}
           </div>
           {!collapsed && (
             <>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 13, fontWeight: 500, color: fg, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Ada Lovelace</div>
-                <div style={{ fontSize: 11, color: sub, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>ada@example.com</div>
+                <div style={{ fontSize: 13, fontWeight: 500, color: fg, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{profile.name}</div>
+                <div style={{ fontSize: 11, color: sub, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{profile.email}</div>
               </div>
               <div className="flex items-center gap-1">
                 <button onClick={toggle} style={{ background: "none", border: "none", color: sub, cursor: "pointer", padding: 4, borderRadius: 6 }}>
@@ -190,19 +212,25 @@ export default function DashboardLayout() {
                 <NavLink to="/dashboard/settings" style={{ color: sub, display: "flex", padding: 4, borderRadius: 6 }}>
                   <Settings size={14} />
                 </NavLink>
+                <button onClick={signOut} style={{ background: "none", border: "none", color: "#EF4444", cursor: "pointer", padding: 4, borderRadius: 6 }}>
+                  <LogOut size={14} />
+                </button>
               </div>
             </>
           )}
         </div>
         {collapsed && (
-          <button onClick={toggle} className="flex justify-center w-full mt-2" style={{ background: "none", border: "none", color: sub, cursor: "pointer", padding: 4 }}>
-            {dark ? <Sun size={14} /> : <Moon size={14} />}
-          </button>
-        )}
-        {collapsed && (
-          <button onClick={() => setCollapsed(false)} className="flex justify-center w-full mt-1" style={{ background: "none", border: "none", color: sub, cursor: "pointer", padding: 4 }}>
-            <ChevronRight size={14} />
-          </button>
+          <div className="flex flex-col items-center gap-1 mt-2">
+            <button onClick={toggle} style={{ background: "none", border: "none", color: sub, cursor: "pointer", padding: 4 }}>
+              {dark ? <Sun size={14} /> : <Moon size={14} />}
+            </button>
+            <button onClick={signOut} style={{ background: "none", border: "none", color: "#EF4444", cursor: "pointer", padding: 4 }}>
+              <LogOut size={14} />
+            </button>
+            <button onClick={() => setCollapsed(false)} style={{ background: "none", border: "none", color: sub, cursor: "pointer", padding: 4 }}>
+              <ChevronRight size={14} />
+            </button>
+          </div>
         )}
       </div>
     </div>

@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { motion } from "motion/react";
-import { PenLine, Eye, EyeOff, ArrowRight, Check } from "lucide-react";
+import { PenLine, Eye, EyeOff, ArrowRight, Check, ArrowLeft } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
+import { useAuth } from "../../context/AuthContext";
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
@@ -15,6 +16,7 @@ const perks = [
 
 export default function Signup() {
   const { dark } = useTheme();
+  const { signUp } = useAuth();
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [name, setName] = useState("");
@@ -22,6 +24,7 @@ export default function Signup() {
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const bg = dark ? "#0A0A08" : "#F7F6F2";
   const card = dark ? "#141412" : "#FFFFFF";
@@ -32,10 +35,16 @@ export default function Signup() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setError("");
     if (step === 1) { setStep(2); return; }
     setLoading(true);
-    await new Promise(r => setTimeout(r, 1000));
-    navigate("/dashboard");
+    const { error } = await signUp(email, password, name);
+    setLoading(false);
+    if (error) {
+      setError(error.message);
+    } else {
+      navigate("/dashboard");
+    }
   }
 
   return (
@@ -59,6 +68,13 @@ export default function Signup() {
             <PenLine size={18} className="text-white" />
           </div>
           <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 20, fontWeight: 700, color: "white" }}>NoteFlow</span>
+        </div>
+
+        {/* Desktop back button - below logo */}
+        <div className="mt-6">
+          <Link to="/" style={{ display: "inline-flex", alignItems: "center", gap: 6, color: "rgba(255,255,255,0.7)", fontSize: 14, fontWeight: 500, textDecoration: "none", transition: "color 0.2s", fontFamily: "'DM Sans', sans-serif" }} onMouseEnter={e => e.currentTarget.style.color = "white"} onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.7)"}>
+            <ArrowLeft size={15} /> Back to NoteFlow
+          </Link>
         </div>
 
         <div className="relative">
@@ -90,13 +106,16 @@ export default function Signup() {
           transition={{ duration: 0.8, delay: 0.15, ease: EASE }}
           style={{ width: "100%", maxWidth: 400 }}
         >
-          {/* Mobile logo */}
-          <div className="lg:hidden flex items-center gap-2 mb-10">
-            <div className="rounded-lg bg-[#6357E8] flex items-center justify-center" style={{ width: 32, height: 32 }}>
-              <PenLine size={15} className="text-white" />
-            </div>
-            <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 18, fontWeight: 700, color: fg }}>NoteFlow</span>
+{/* Mobile logo */}
+        <div className="lg:hidden flex items-center justify-between mb-10">
+          <Link to="/" style={{ display: "flex", alignItems: "center", gap: 8, color: sub, fontSize: 14, fontWeight: 500, textDecoration: "none", transition: "color 0.2s", fontFamily: "'DM Sans', sans-serif" }} onMouseEnter={e => e.currentTarget.style.color = fg} onMouseLeave={e => e.currentTarget.style.color = sub}>
+            <ArrowLeft size={15} /> Back to NoteFlow
+          </Link>
+          <div className="rounded-lg bg-[#6357E8] flex items-center justify-center" style={{ width: 32, height: 32 }}>
+            <PenLine size={15} className="text-white" />
           </div>
+          <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 18, fontWeight: 700, color: fg }}>NoteFlow</span>
+        </div>
 
           {/* Step indicator */}
           <div className="flex items-center gap-2 mb-8">
@@ -176,6 +195,11 @@ export default function Signup() {
               </div>
             )}
 
+            {error && (
+              <div style={{ fontSize: 13, color: "#EF4444", background: "rgba(239,68,68,0.1)", borderRadius: 8, padding: "10px 14px" }}>
+                {error}
+              </div>
+            )}
             <motion.button type="submit" disabled={loading} whileTap={{ scale: 0.98 }}
               className="flex items-center justify-center gap-2 rounded-xl font-semibold"
               style={{ width: "100%", padding: "14px", background: "#6357E8", color: "white", fontSize: 15, border: "none", cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.75 : 1, marginTop: 4 }}>

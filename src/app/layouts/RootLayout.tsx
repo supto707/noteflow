@@ -1,5 +1,6 @@
-import { Outlet } from "react-router";
+import { Outlet, Navigate } from "react-router";
 import { ThemeProvider, useTheme } from "../context/ThemeContext";
+import { AuthProvider, useAuth } from "../../context/AuthContext";
 
 function ThemedRoot() {
   const { dark } = useTheme();
@@ -10,10 +11,19 @@ function ThemedRoot() {
   );
 }
 
+export function AuthGuard({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAuth();
+  if (loading) return null;
+  if (!user) return <Navigate to="/login" replace />;
+  return <>{children}</>;
+}
+
 export default function RootLayout() {
   return (
     <ThemeProvider>
-      <ThemedRoot />
+      <AuthProvider>
+        <ThemedRoot />
+      </AuthProvider>
     </ThemeProvider>
   );
 }

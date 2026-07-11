@@ -1,7 +1,10 @@
 import { createContext, useContext, useState, useEffect } from "react";
+import { motion, AnimatePresence } from "motion/react";
 
 type ThemeCtx = { dark: boolean; toggle: () => void };
 const ThemeContext = createContext<ThemeCtx>({ dark: false, toggle: () => {} });
+
+const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [dark, setDark] = useState(() => {
@@ -10,6 +13,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     try { localStorage.setItem("nf-theme", dark ? "dark" : "light"); } catch {}
+    // Add theme transition class to html element for smooth CSS transitions
+    const root = document.documentElement;
+    root.classList.add("theme-transitioning");
+    requestAnimationFrame(() => {
+      root.classList.remove("theme-transitioning");
+    });
   }, [dark]);
 
   return (
@@ -20,3 +29,4 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 }
 
 export const useTheme = () => useContext(ThemeContext);
+export { EASE as themeEase };

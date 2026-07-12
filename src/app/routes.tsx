@@ -32,6 +32,7 @@ import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import CookiePolicy from "./pages/CookiePolicy";
 import Security from "./pages/Security";
+import Developer from "./pages/Developer";
 
 export const router = createBrowserRouter([
   {
@@ -46,6 +47,7 @@ export const router = createBrowserRouter([
       { path: "changelog", Component: Changelog },
       { path: "docs", Component: Docs },
       { path: "about", Component: About },
+      { path: "developer", Component: Developer },
       { path: "roadmap", Component: Roadmap },
       { path: "status", Component: Status },
       { path: "api-reference", Component: ApiReference },

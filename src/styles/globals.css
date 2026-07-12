@@ -1,3 +1,13 @@
+html {
+  scroll-behavior: smooth;
+}
+
+html, body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior-y: none;
+}
+
 /* Smooth theme transitions - only apply to non-contentEditable elements */
 html.theme-transitioning *:not([contenteditable="true"]),
 html.theme-transitioning *:not([contenteditable="true"])::before,

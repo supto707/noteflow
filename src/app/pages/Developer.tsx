@@ -2,15 +2,39 @@ import { useRef } from "react";
 import { motion, useInView, useScroll, useTransform } from "motion/react";
 import { Link } from "react-router";
 import {
-  PenLine, ArrowRight, ChevronRight, Code, BookOpen, Award, Globe, Mail,
-  Github, Linkedin, ExternalLink, GraduationCap, Cpu, Database, Layers,
-  Star, Trophy, MapPin, Languages, FileCode, Palette, Terminal, Server
+  PenLine, ArrowRight, ChevronRight, BookOpen, Mail,
+  Github, Linkedin, GraduationCap,
+  Star, Languages
 } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
 import Navbar from "../components/Navbar";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
+import trophyLottie from "../../assets/Trophy.lottie";
 import developerImg1 from "../../assets/IMG_9466.jpg";
-import developerImg2 from "../../assets/IMG_20240807_232403_216.jpg";
 import developerImg3 from "../../assets/IMG_0768.jpg";
+import iconGolang from "../../assets/golang.png";
+import iconPython from "../../assets/python.png";
+import iconJs from "../../assets/js.png";
+import iconHtml from "../../assets/html-5.png";
+import iconCss from "../../assets/css-3.png";
+import iconTailwind from "../../assets/tailwind.png";
+import iconBootstrap from "../../assets/icons8-bootstrap-48.png";
+import iconNextjs from "../../assets/icons8-nextjs-48.png";
+import iconReact from "../../assets/icons8-react-native-48.png";
+import iconExpress from "../../assets/icons8-express-js-48.png";
+import iconNodejs from "../../assets/icons8-nodejs-48.png";
+import iconThreejs from "../../assets/Three.js_Icon.svg";
+import iconGit from "../../assets/icons8-git-48.png";
+import iconFigma from "../../assets/icons8-figma-48.png";
+import iconMongodb from "../../assets/icons8-mongodb-48.png";
+import iconSupabase from "../../assets/icons8-supabase-48.png";
+import iconFirebase from "../../assets/icons8-firebase-48.png";
+import iconInstagram from "../../assets/instagram.png";
+import iconX from "../../assets/icons8-x-50.png";
+import flagBangladesh from "../../assets/bangladesh.png";
+import flagUK from "../../assets/united-kingdom.png";
+import flagIndia from "../../assets/india.png";
+import flagGerman from "../../assets/german.png";
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
@@ -20,7 +44,7 @@ function RevealLine({ children, delay = 0, className = "" }: { children: React.R
   return (
     <div ref={ref} className={`overflow-hidden ${className}`}>
       <motion.div initial={{ y: "105%", skewY: 1.5 }} animate={inView ? { y: 0, skewY: 0 } : {}}
-        transition={{ duration: 1.0, delay, ease: EASE }}>
+        transition={{ duration: 2, delay, ease: EASE }}>
         {children}
       </motion.div>
     </div>
@@ -40,34 +64,34 @@ function FadeUp({ children, delay = 0, className = "" }: { children: React.React
 
 const skills = {
   "Programming Languages": [
-    { name: "Golang", icon: Terminal, color: "#00ADD8" },
-    { name: "Python", icon: Code, color: "#3776AB" },
-    { name: "JavaScript", icon: FileCode, color: "#F7DF1E" },
+    { name: "Golang", icon: iconGolang },
+    { name: "Python", icon: iconPython },
+    { name: "JavaScript", icon: iconJs },
   ],
   "Frontend & Markup": [
-    { name: "HTML/CSS", icon: Palette, color: "#E34F26" },
-    { name: "Tailwind", icon: Layers, color: "#06B6D4" },
-    { name: "Bootstrap", icon: Layers, color: "#7952B3" },
+    { name: "HTML/CSS", icon: iconHtml },
+    { name: "Tailwind", icon: iconTailwind },
+    { name: "Bootstrap", icon: iconBootstrap },
   ],
   "Frameworks & Libraries": [
-    { name: "Next.js", icon: Globe, color: "#000000" },
-    { name: "React", icon: Globe, color: "#61DAFB" },
-    { name: "Express.js", icon: Server, color: "#000000" },
-    { name: "Node.js", icon: Server, color: "#339933" },
-    { name: "Three.js", icon: Cpu, color: "#000000" },
+    { name: "Next.js", icon: iconNextjs },
+    { name: "React", icon: iconReact },
+    { name: "Express.js", icon: iconExpress },
+    { name: "Node.js", icon: iconNodejs },
+    { name: "Three.js", icon: iconThreejs },
   ],
   "Tools & Databases": [
-    { name: "Git/GitHub", icon: Github, color: "#F05032" },
-    { name: "Figma", icon: Palette, color: "#F24E1E" },
-    { name: "MongoDB", icon: Database, color: "#47A248" },
-    { name: "Supabase", icon: Database, color: "#3ECF8E" },
-    { name: "Firebase", icon: Database, color: "#FFCA28" },
+    { name: "Git", icon: iconGit },
+    { name: "Figma", icon: iconFigma },
+    { name: "MongoDB", icon: iconMongodb },
+    { name: "Supabase", icon: iconSupabase },
+    { name: "Firebase", icon: iconFirebase },
   ],
 };
 
 const awards = [
-  { title: "Creative Talent Exploration Competition 2024", category: "Mathematics and Computer", position: "1st", region: "Rangpur Division", icon: Trophy },
-  { title: "ICT Olympiad Bangladesh 2023", category: "Computer", position: "1st", region: "Rangpur Division", icon: Award },
+  { title: "Creative Talent Exploration Competition 2024", category: "Mathematics and Computer", position: "1st", region: "Rangpur Division" },
+  { title: "ICT Olympiad Bangladesh 2023", category: "Computer", position: "1st", region: "Rangpur Division" },
 ];
 
 const education = [
@@ -90,10 +114,10 @@ const training = [
 ];
 
 const languages = [
-  { name: "Bengali", level: "Native", flag: "🇧🇩" },
-  { name: "English", level: "Fluent", flag: "🇬🇧" },
-  { name: "Hindi", level: "Conversational", flag: "🇮🇳" },
-  { name: "German", level: "Beginner", flag: "🇩🇪" },
+  { name: "Bengali", level: "Native", flag: flagBangladesh },
+  { name: "English", level: "Fluent", flag: flagUK },
+  { name: "Hindi", level: "Conversational", flag: flagIndia },
+  { name: "German", level: "Beginner", flag: flagGerman },
 ];
 
 export default function Developer() {
@@ -146,9 +170,6 @@ export default function Developer() {
               <div className="relative">
                 <div style={{ position: "relative", borderRadius: 24, overflow: "hidden", aspectRatio: "4/5" }}>
                   <img src={developerImg1} alt="Sadman Arefin Supto" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                </div>
-                <div className="absolute -bottom-6 -right-6" style={{ width: 200, height: 200, borderRadius: 20, overflow: "hidden", border: `4px solid ${cardBg}`, boxShadow: "0 20px 40px rgba(0,0,0,0.2)" }}>
-                  <img src={developerImg2} alt="Sadman Arefin Supto" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                 </div>
               </div>
             </FadeUp>
@@ -210,8 +231,8 @@ export default function Developer() {
                         className="flex items-center gap-3 p-3 rounded-xl"
                         style={{ background: dark ? "rgba(255,255,255,0.03)" : "rgba(14,14,12,0.03)" }}
                       >
-                        <div style={{ width: 36, height: 36, borderRadius: 10, background: `${skill.color}18`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                          <skill.icon size={18} style={{ color: skill.color }} />
+                        <div style={{ width: 36, height: 36, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                          <img src={skill.icon} alt={skill.name} style={{ width: 28, height: 28, objectFit: "contain" }} />
                         </div>
                         <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 500, color: fg }}>{skill.name}</span>
                       </motion.div>
@@ -301,8 +322,8 @@ export default function Developer() {
                   transition={{ duration: 0.3 }}
                   style={{ padding: 40, background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, textAlign: "center" }}
                 >
-                  <div style={{ width: 80, height: 80, borderRadius: 20, background: "linear-gradient(135deg, #6357E8, #22C27D)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 24px" }}>
-                    <Trophy size={36} style={{ color: "white" }} />
+                  <div style={{ width: 120, height: 120, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 24px" }}>
+                    <DotLottieReact src={trophyLottie} autoplay loop style={{ width: 120, height: 120 }} />
                   </div>
                   <div style={{ fontFamily: "'Geist Mono', monospace", fontSize: 48, fontWeight: 700, color: "#6357E8", marginBottom: 8 }}>1st</div>
                   <h4 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 22, fontWeight: 700, color: fg, marginBottom: 8 }}>{award.title}</h4>
@@ -333,7 +354,9 @@ export default function Developer() {
                 {languages.map((lang, i) => (
                   <FadeUp key={i} delay={i * 0.1}>
                     <div className="flex items-center gap-4 p-4 rounded-xl" style={{ background: cardBg, border: `1px solid ${borderColor}` }}>
-                      <span style={{ fontSize: 32 }}>{lang.flag}</span>
+                      <span style={{ width: 32, height: 32, borderRadius: "50%", overflow: "hidden", display: "inline-block", flexShrink: 0 }}>
+                        <img src={lang.flag} alt={lang.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      </span>
                       <div className="flex-1">
                         <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 18, fontWeight: 700, color: fg }}>{lang.name}</div>
                         <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: sub }}>{lang.level}</div>
@@ -364,11 +387,11 @@ export default function Developer() {
                   </a>
                   <a href="https://www.instagram.com/season4_supto/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-6 py-3 rounded-full transition-all duration-300"
                     style={{ background: cardBg, border: `1px solid ${borderColor}`, color: fg, textDecoration: "none", fontFamily: "'DM Sans', sans-serif", fontSize: 15, fontWeight: 500 }}>
-                    <ExternalLink size={18} /> Instagram
+                    <img src={iconInstagram} alt="Instagram" style={{ width: 18, height: 18 }} /> Instagram
                   </a>
                   <a href="https://x.com/supto041221" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-6 py-3 rounded-full transition-all duration-300"
                     style={{ background: cardBg, border: `1px solid ${borderColor}`, color: fg, textDecoration: "none", fontFamily: "'DM Sans', sans-serif", fontSize: 15, fontWeight: 500 }}>
-                    <ExternalLink size={18} /> X (Twitter)
+                    <img src={iconX} alt="X" style={{ width: 18, height: 18 }} /> X (Twitter)
                   </a>
                 </div>
               </FadeUp>

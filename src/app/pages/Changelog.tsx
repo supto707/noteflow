@@ -20,7 +20,7 @@ function RevealLine({ children, delay = 0, className = "" }: { children: React.R
   return (
     <div ref={ref} className={`overflow-hidden ${className}`}>
       <motion.div initial={{ y: "105%", skewY: 1.5 }} animate={inView ? { y: 0, skewY: 0 } : {}}
-        transition={{ duration: 1.0, delay, ease: EASE }}>
+        transition={{ duration: 2, delay, ease: EASE }}>
         {children}
       </motion.div>
     </div>
@@ -43,7 +43,7 @@ function SlideIn({ children, delay = 0, from = "left", className = "" }: { child
   const inView = useInView(ref, { once: true, margin: "-4%" });
   return (
     <motion.div ref={ref} initial={{ opacity: 0, x: from === "left" ? -60 : 60 }} animate={inView ? { opacity: 1, x: 0 } : {}}
-      transition={{ duration: 1.0, delay, ease: EASE }} className={className}>
+      transition={{ duration: 2, delay, ease: EASE }} className={className}>
       {children}
     </motion.div>
   );

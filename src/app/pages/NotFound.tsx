@@ -17,7 +17,7 @@ function RevealLine({ children, delay = 0, className = "" }: { children: React.R
   return (
     <div ref={ref} className={`overflow-hidden ${className}`}>
       <motion.div initial={{ y: "105%", skewY: 1.5 }} animate={inView ? { y: 0, skewY: 0 } : {}}
-        transition={{ duration: 1.0, delay, ease: EASE }}>
+        transition={{ duration: 2, delay, ease: EASE }}>
         {children}
       </motion.div>
     </div>
